@@ -1,0 +1,32 @@
+{
+  "name": "appsales",
+  "version": "1.0.0",
+  "description": "��#\u0000 \u0000t\u0000a\u0000e\u0000-\u0000a\u0000p\u0000p\u0000S\u0000a\u0000l\u0000e\u0000s\u0000\r\u0000 \u0000",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon -r dotenv/config ./index.js",
+    "start": "node -r dotenv/config ./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fezer/tae-appSales.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Fezer/tae-appSales/issues"
+  },
+  "homepage": "https://github.com/Fezer/tae-appSales#readme",
+  "dependencies": {
+    "dotenv-safe": "^8.2.0",
+    "express": "^4.17.2",
+    "mysql2": "^2.3.3",
+    "sequelize": "^6.16.1",
+    "sequelize-cli": "^6.4.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
