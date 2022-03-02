@@ -17,8 +17,7 @@ module.exports = {
       saleDate: {
         type: Sequelize.DATE,
         allowNull: false,
-        defaultValue:
-          Sequelize.literal("CURRENT_TIMESTAMP"),
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
       description: {
         type: Sequelize.STRING,
@@ -28,18 +27,15 @@ module.exports = {
         type: Sequelize.FLOAT,
         allowNull: false,
       },
-      createAt: {
+      createdAt: {
         type: Sequelize.DATE,
         allowNull: false,
-        defaultValue:
-          Sequelize.literal("CURRENT_TIMESTAMP"),
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
       updatedAt: {
         type: Sequelize.DATE,
         allowNull: false,
-        defaultValue: Sequelize.literal(
-          "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
-        ),
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"),
       },
     });
   },
