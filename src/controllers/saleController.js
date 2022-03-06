@@ -1,7 +1,6 @@
 const Seller = require("../models/Seller");
 const Sale = require("../models/Sale");
 const sequelize = require("sequelize");
-const { is } = require("express/lib/request");
 
 module.exports = {
     async listAllSales(req, res){
