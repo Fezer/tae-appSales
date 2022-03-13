@@ -39,7 +39,7 @@ module.exports = {
     },
 
     async searchSalesBySeller(req, res){
-        const sellerId = req.body.sellerId;
+        const sellerId = req.params.id;
         if(sellerId){
             const sales = await Sale.findAll({
                 where: { sellerId },
@@ -85,7 +85,7 @@ module.exports = {
     },
 
     async updateSale(req, res){
-        const saleId = req.body.id;
+        const saleId = req.params.id;
         const sale = req.body;
         if(!saleId){
             return res.status(400).json({ msg: "Paramêtro id vazio." });
@@ -107,7 +107,7 @@ module.exports = {
     },
 
     async deleteSale(req, res){
-        const saleId = req.body.id;
+        const saleId = req.params.id;
         if(!saleId){
             return res.status(400).json({ msg: "Parâmetro obrigatório (id) não informado." });
         } else{

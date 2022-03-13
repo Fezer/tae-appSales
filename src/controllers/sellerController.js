@@ -1,8 +1,67 @@
 const Seller = require("../models/Seller");
 const Sale = require("../models/Sale");
 const sequelize = require("sequelize");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
+function passwordValidation(password){
+    if(password.length < 8){
+        return "A senha deve possuir no mínimo 8 caracteres.";
+    }else if(!password.match(/[a-zA-Z]/g)){
+        return "A senha deve ter no mínimo uma letra.";
+    }else if(!password.match(/[1-9]/)){
+        return "A senha deve ter no mínimo um número.";
+    }else{
+        return "OK";
+    }
+}
+
+function generateToken(id){
+    console.log(process.env.JWT_SECRET);
+    process.env.JWT_SECRET = Math.random().toString(36).slice(-20);
+    console.log(process.env.JWT_SECRET);
+    const token = jwt.sign({id}, process.env.JWT_SECRET,{
+        expiresIn: 82800,
+    });
+    console.log(token);
+    return token;
+}
+
+function hashPassword(password){
+    const salt = bcrypt.genSaltSync(12);
+    const hash = bcrypt.hashSync(password, salt);
+    return hash;
+}
+
 
 module.exports = {
+    async authentication(req, res){
+        const email = req.body.email;
+        const password = req.body.password;
+
+        if(!email || !password){
+            return res.status(400).json({ msg: "Campos obrigatórios vazios." });
+        }else{
+            try{
+                const seller = await Seller.findOne({
+                    where: { email },
+                });
+                if(!seller){
+                    return res.status(404).json({ msg: "Usuário ou senha inválidos." });
+                }else{
+                    if(bcrypt.compareSync(password, seller.password)){
+                        const token = generateToken(seller.id);
+                        return res.status(200).json({ msg: "Autenticação realizada com sucesso.", token });
+                    }else{
+                        return res.status(404).json({ msg: "Usuário ou senha inválidos." });
+                    }
+                }
+            }catch(error){
+                res.status(500).json({ msg: "Erro: " + error });
+            }
+        }
+    },
+
     async listAllSellers(req, res){
         const sellers = await Seller.findAll({
             order: [["name", "ASC"]],
@@ -16,7 +75,7 @@ module.exports = {
     },
 
     async searchSellerByName(req, res){
-        const name = req.body.name;
+        const name = req.params.name;
         if(name == undefined)
             return res.status(400).json({ msg: "Variável name inexistente.",
         });
@@ -42,16 +101,23 @@ module.exports = {
         if(!name || !email || !password){
             return res.status(400).json({ msg: "Dados obrigatórios não foram preenchidos." });
         }
+
+        const passwordValid = passwordValidation(password);
+        if(passwordValid != "OK"){
+            return res.status(400).json({ msg: passwordValid });
+        }
+
         const isSellerNew = await Seller.findOne({
             where: { email },
         });
         if(isSellerNew)
             return res.status(403).json({ msg: "Vendedor já foi cadastrado." });
         else{
+            hash = hashPassword(password);
             const seller = await Seller.create({
                 name,
                 email,
-                password,
+                password: hash,
             }).catch((error) => {
                 return res.status(500).json({ msg: "Não foi possível inserir os dados." });
             });
@@ -86,7 +152,7 @@ module.exports = {
     },
 
     async updateSeller(req, res){
-        const sellerId = req.body.id;
+        const sellerId = req.params.id;
         const seller = req.body;
         const email = req.body.email;
         if(!sellerId)
@@ -115,13 +181,16 @@ module.exports = {
     },
 
     async updatePasswordSeller(req, res){
-        const sellerId = req.body.id;
+        const sellerId = req.params.id;
         const sellerOldPassword = req.body.oldPassword;
         const password = req.body.password;
-        const seller = req.body;
-
+        
         if(!sellerId){
             return res.status(400).json({ msg: "ID do vendedor vazio." });
+        }
+        const passwordValid = passwordValidation(password);
+        if(passwordValid != "OK"){
+            return res.status(400).json({ msg: passwordValid });
         }
         if(!sellerOldPassword || !password){
             return res.status(400).json({ msg: "É necessário informar a senha atual e a nova senha." });
@@ -130,13 +199,14 @@ module.exports = {
         if(!sellerExists)
             return res.status(404).json({ msg: "Vendedor não encontrado." });
         else{
-            if(sellerExists.password != sellerOldPassword){
-                return res.status(400).json({ msg: "A senha atual informada está incorreta." });
-            }else{
-                await Seller.update(seller, {
+            if(bcrypt.compareSync(sellerOldPassword, sellerExists.password)){
+                hash = hashPassword(password);
+                await Seller.update({password : hash}, {
                     where: { id: sellerId},
                 });
                 return res.status(200).json({ msg: "Senha atualizada com sucesso." });
+            }else{
+                return res.status(400).json({ msg: "A senha atual informada está incorreta." });
             }
         }        
     },

@@ -1,0 +1,119 @@
+//Seller tests
+
+### //Seller authentication
+# @name auth
+POST {{baseUrl}}/seller/authentication HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+    "email": "felipe@mail.com",
+    "password": "1234567a"
+}
+
+
+### //Seller listAllSellers
+GET {{baseUrl}}/seller/listAllSellers HTTP/1.1
+x-access-token: {{auth.response.body.token}}
+
+
+### //Seller searchSellerByName
+@name = Hari Seldon
+GET {{baseUrl}}/seller/searchSellerByName/{{name}} HTTP/1.1
+x-access-token: {{auth.response.body.token}}
+
+
+### //Seller newSeller
+POST {{baseUrl}}/seller/newSeller HTTP/1.1
+x-access-token: {{auth.response.body.token}}
+Content-Type: {{contentType}}
+
+{
+    "name": "Hari Seldon",
+    "email": "hariseldon@mail.com",
+    "password": "1234567a"
+}
+
+
+### //Seller deleteSeller
+@idDel = 6
+DELETE {{baseUrl}}/seller/deleteSeller/{{idDel}} HTTP/1.1
+x-access-token: {{auth.response.body.token}}
+
+
+### //Seller updateSeller
+@idUp = 6
+PUT {{baseUrl}}/seller/updateSeller/{{idUp}} HTTP/1.1
+x-access-token: {{auth.response.body.token}}
+Content-Type: {{contentType}}
+
+{
+    "name": "Hari Seldon",
+    "email": "harihari@galaxia.com"
+}
+
+
+### //Seller updatePasswordSeller
+@idUpPw = 6
+PUT {{baseUrl}}/seller/updatePasswordSeller/{{idUpPw}} HTTP/1.1
+x-access-token: {{auth.response.body.token}}
+Content-Type: {{contentType}}
+
+{
+    "oldPassword": "1234567b",
+    "password": "1234567a"
+}
+
+
+// Sale tests
+
+### //Sale listAllSales
+GET {{baseUrl}}/sale/listAllSales HTTP/1.1
+x-access-token: {{auth.response.body.token}}
+
+
+### //Sale searchSalesByDate
+GET {{baseUrl}}/sale/searchSalesByDate HTTP/1.1
+x-access-token: {{auth.response.body.token}}
+Content-Type: {{contentType}}
+
+{
+    "startDate" : "2021-02-01",
+    "endDate" : "2022-05-02"
+}
+
+### //Sale searchSalesBySeller
+@idSel = 1
+
+GET {{baseUrl}}/sale/searchSalesBySeller/{{idSel}} HTTP/1.1
+x-access-token: {{auth.response.body.token}}
+
+
+### //Sale listTotalSalesByDate
+GET {{baseUrl}}/sale/listTotalSalesByDate HTTP/1.1
+x-access-token: {{auth.response.body.token}}
+Content-Type: {{contentType}}
+
+{
+    "startDate" : "2021-02-01",
+    "endDate" : "2022-05-02"
+}
+
+
+### //Sale deleteSale
+@idSaleDel = 4
+
+DELETE {{baseUrl}}/sale/deleteSale/{{idSaleDel}} HTTP/1.1
+x-access-token: {{auth.response.body.token}}
+
+
+### //Sale updateSale
+@idSaleUpdate = 3
+
+PUT {{baseUrl}}/sale/updateSale/{{idSaleUpdate}} HTTP/1.1
+x-access-token: {{auth.response.body.token}}
+Content-Type: {{contentType}}
+
+{
+    "sellerId": "1",
+    "value": "30"
+}
